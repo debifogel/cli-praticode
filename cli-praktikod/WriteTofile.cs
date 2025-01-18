@@ -28,7 +28,15 @@ namespace cli_praktikod
                 file.WriteLine(line);
             }
         }
-
+        private static bool goodDirectory(string name)
+        {
+            string[] arr = { "bin", "node_modules", "obj",".angular",".vscode","public","x64" };
+            foreach (var line in arr)
+            {
+                if (name.Contains(line)) {  return false; }
+            }
+            return true;
+        }
        public  static List<string> GetFilesByExtension(string directory, string extension)
         {
             List<string> fileList = new List<string>();
@@ -41,8 +49,14 @@ namespace cli_praktikod
                 // Get all subdirectories
                 foreach (var dir in Directory.GetDirectories(directory))
                 {
-                    // Recursively get files in subdirectories with the specified extension
-                    fileList.AddRange(GetFilesByExtension(dir, extension));
+                    if (goodDirectory(dir))
+                    {
+
+                        // Recursively get files in subdirectories with the specified extension
+
+                        fileList.AddRange(GetFilesByExtension(dir, extension));
+
+                    }
                 }
             }
             catch (Exception ex)
@@ -55,14 +69,24 @@ namespace cli_praktikod
         private static bool isNot(string item)
         {
             //check what to do with the exe files
-            string[] s = { ".bin", "sln", ".pdb", ".exe", ".vcxproj", ".xml", ".json", ".app", ".node", ".config",".txt" };
+            string[] s = { 
+            ".cs",
+            ".py",
+            ".html",
+            ".ts",
+            ".tsx",
+            ".js",
+            ".css"
+            ,".ipynb" ,
+             ".cpp",
+             ".h"};
 
             foreach (var f in s)
             {
-                if (item.Contains(f))
-                    return false;
+                if (item.EndsWith(f))
+                    return true;
             }
-            return true;
+            return false;
         }
         public static List<string>FilterFiles(List<string> files)=> files.Where(item => isNot(item)).ToList();
 
@@ -72,16 +96,15 @@ namespace cli_praktikod
             sortedList.Sort(new Comparison<string>(comparisonFunc));
             return sortedList;
         }
-       public static void CopiesFiles(List<string> files, string file,Action<string,StreamWriter>CopyFunc)
+       public static void CopiesFiles(List<string> files, StreamWriter file,Action<string,StreamWriter>CopyFunc)
        {
-            StreamWriter fileWriter = new StreamWriter(file,true);
             foreach (var item in files)
             {
-                CopyFunc(item, fileWriter);
+                CopyFunc(item, file);
             }
-            fileWriter.Close();
+            file.Close();
        }
-        public static void AllCopy(string directory, string file
+        public static void AllCopy(string directory, StreamWriter file
             , Action<string,StreamWriter>CopyFunc, Func<string, string, int> comparisonFunc, string end = ".*")
         {
             List<string>list= GetFilesByExtension(directory,end);
