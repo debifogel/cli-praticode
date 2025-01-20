@@ -116,7 +116,7 @@ bundleComand.SetHandler((openFile,language,sourceKod,sort,removeEmpty,name) =>
     try
     {
         StreamWriter file = new StreamWriter(openFile.Name);
-        if (name != ""||name!=null)
+        if (name != ""&&name!=null)
         { WriteTofile.WriteDetailes("//"+name, file); }
         if (sourceKod)
         { WriteTofile.WriteDetailes("//"+Directory.GetCurrentDirectory(), file); }
